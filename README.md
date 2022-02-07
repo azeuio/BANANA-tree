@@ -1,21 +1,39 @@
-# BANANA-tree
+# BANANA-tree 🌴🍌
 
-A coding style detector.<br>
+A coding style error detector.<br>
 Note that it follows the Eptitech coding style.
 
 # Installing
 
 ## Prerequisites
 
+* Requires a linux operating system
 * Requires python 3.9+
+* Requires git
 
 ## From terminal
 
-    # Not implemented yet
+Execute this command to install BANANA-tree on your system:
+```
+curl https://raw.githubusercontent.com/azeuio/BANANA-tree/main/install.sh > install.sh && chmod 755 ./install.sh && ./install.sh
+```
+# Usage
+
+Simply type
+```
+BANANA-tree
+```
+and the program will detect any coding style error in your current directory
+
+Use
+```
+man BANANA-tree
+```
+for more information
 
 # Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the process for submitting pull requests.
 
 # Versioning
 
