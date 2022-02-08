@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-cd $HOME/BANANA-tree
+if ! cd $HOME/BANANA-tree;
+then
+    echo "Folder '$HOME/BANANA-tree' doesn't exists."
+    echo -n "Please install the program following the README instructions "
+    echo "at https://github.com/azeuio/BANANA-tree"
+    exit 1
+fi
 git_pull_output=$(git pull)
 if [ "$git_pull_output" != "Already up to date." ]
 then
