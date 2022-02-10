@@ -3,9 +3,12 @@ from sys import argv
 import subprocess
 from custom_exit import exit
 from exit_codes import *
+import tempfile
 
 def print_help():
-    subprocess.call(["man", "BANANA-tree"])
+    with tempfile.TemporaryFile("w") as f:
+        if subprocess.call(["man", "BANANA-tree"], stderr=f):
+            exit(EXIT_MAN_PAGE_NOT_FOUND)
 
 if __name__ == '__main__':
     if len(argv) == 1:

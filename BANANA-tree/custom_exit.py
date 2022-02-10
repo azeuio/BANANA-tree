@@ -5,6 +5,7 @@ EXIT_MESSAGES:dict[int,str] = {
     EXIT_OK:"",
     EXIT_COMMON_ERROR:"An error occured",
     EXIT_INVALID_NUMBER_OF_PARAMS:"An invalid number of parameters was passed",
+    EXIT_MAN_PAGE_NOT_FOUND:"Man page was not found"
 }
 
 def exit(exit_code=0):
