@@ -16,7 +16,8 @@ def exit(exit_code=0):
         print("Wrong exit code")
         exit(1)
     if EXIT_MESSAGES.get(exit_code, -1) != -1:
-        print(EXIT_MESSAGES[exit_code])
+        if EXIT_MESSAGES[exit_code]:
+            print(EXIT_MESSAGES[exit_code])
     else:
         print(EXIT_MESSAGES[EXIT_COMMON_ERROR])
     sys.exit(exit_code)
