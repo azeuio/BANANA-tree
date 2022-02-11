@@ -1,4 +1,4 @@
-from check_report import CheckReport
+from .check_report import CheckReport
 
 class Checker:
     def __init__(self, error_type=None):
