@@ -4,6 +4,7 @@ from globals import MAJOR, MINOR, INFO
 
 class CheckerManager:
     CHECKERS:tuple[checks.Checker] = (
+        checks.F3Checker(),
     )
 
     def __init__(self):
