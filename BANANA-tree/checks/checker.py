@@ -1,8 +1,8 @@
 from check_report import CheckReport
 
 class Checker:
-    def __init__(self):
-        self.error_type = None
+    def __init__(self, error_type=None):
+        self.error_type = error_type
 
     def check(self, filename):
         """
