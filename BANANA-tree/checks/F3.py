@@ -26,7 +26,10 @@ class F3Checker(Checker):
         errors = []
         line_number = 1
         with open(filename, "r") as f:
-            line = f.readline()
+            try:
+                line = f.readline()
+            except UnicodeDecodeError:
+                return errors
             while line:
                 line = line.removesuffix('\n')
                 errors.extend(self._check_line(filename, line, line_number))
