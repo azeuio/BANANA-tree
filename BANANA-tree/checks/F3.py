@@ -2,13 +2,11 @@ from .checker import Checker
 from .check_report import CheckReport
 from globals import *
 
-#TODO: checks tab
 class F3Checker(Checker):
     def __init__(self):
         super().__init__("F3", severity=MAJOR)
 
     def _check_line(self, filename:str, line:str, line_number:int):
-        # line = line.replace("\t", " " * TAB_LENGTH)
         while "\t" in line:
             i = line.find("\t")
             line = line[:i] + " " * (TAB_LENGTH - (i % TAB_LENGTH)) + line[i + 1:]
