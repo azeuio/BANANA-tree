@@ -14,11 +14,7 @@ def print_help():
 if __name__ == '__main__':
     if ("-h" in argv) or ("--help" in argv):
         print_help()
-    if (len(argv) == 1):
-        path_to_check = "."
-    else:
-        path_to_check = argv[1]
-    manager = CheckerManager()
-    if manager.check(path_to_check) == False:
-        exit(EXIT_INVALID_PATH)
+    manager = CheckerManager(argv)
+    if manager.check():
+        exit(EXIT_INVALID_PATH, manager.path)
     exit(EXIT_OK)

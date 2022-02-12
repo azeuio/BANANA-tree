@@ -1,4 +1,5 @@
-from math import ceil
+from custom_exit import exit
+from exit_codes import EXIT_INVALID_PARAMETER
 import checks
 import os
 from globals import MAJOR, MINOR, INFO
@@ -9,8 +10,23 @@ class CheckerManager:
         checks.F3Checker(),
     )
 
-    def __init__(self):
-        pass
+    def __init__(self, argv:list[str]):
+        argv_without_options = [arg for arg in argv if not arg.startswith("-")]
+        options = {}
+        for opt in argv:
+            if not opt.startswith("-"):
+                continue
+            opt = opt.split("=")
+            if len(opt) == 1:
+                opt.append("")
+            options[opt[0]] = opt[1]
+        self.view = options.get("--view") or options.get("-v") or "list"
+        if self.view not in ("list", "tree"):
+            exit(EXIT_INVALID_PARAMETER, ("--view" if "--view" in argv else "-v", self.view))
+        if len(argv_without_options) > 1:
+            self.path = argv_without_options[1]
+        else:
+            self.path = "."
 
     def check_file(self, filename):
         if not (os.path.exists(filename) and os.path.isfile(filename)):
@@ -59,8 +75,37 @@ class CheckerManager:
                     print(f"\t\t{reports[0].error_type}", end="")
                     print(f"\t{self._get_severity_str(line)}")
 
+    def _print_reports_tree_view(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
+        if (is_file_hidden(path) == 1):
+            return []
+        if (path.count("/") > 1):
+            print("|", end="")
+            for _ in range(path.count("/") - 2):
+                print("  |", end="")
+        print("  " * ((path.count("/")) > 1), end="")
+        print(f"{path.removesuffix('/')}/")
+        if os.path.isfile(path):
+            print(f"{path}")
+        elif os.path.isdir(path):
+            for file in os.listdir(path):
+                file = str(path.removesuffix("/") + "/" + file)
+                if (os.path.isdir(file)):
+                    self._print_reports_tree_view(file, file_reports)
+                else:
+                    if (file.count("/") > 1):
+                        print("|", end="")
+                        for _ in range(file.count("/") - 2):
+                            print("  |", end="")
+                    print("  " * (file.count("/") - 2), end="")
+                    if any(report.filename == file for file_report in file_reports  for reports in file_report for report in reports):
+                        print(f"\33[31;1m", end="")
+                    print(f"{file.removesuffix('/')}\33[m")
+
     def _print_reports(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
-        self._print_reports_list(file_reports)
+        if self.view == "list":
+            self._print_reports_list(file_reports)
+        elif self.view == "tree":
+            self._print_reports_tree_view(path, file_reports)
 
     def _get_reports(self, path:str):
         if (is_file_hidden(path) == 1):
@@ -77,8 +122,11 @@ class CheckerManager:
                     file_reports.append(self.check_file(file))
         return file_reports
 
-    def check(self, path):
+    def check(self, path=""):
+        if not path:
+            path = self.path
         if not os.path.exists(path):
-            return False
+            return 1
         file_reports = self._get_reports(path)
         self._print_reports(path, file_reports)
+        return 0
