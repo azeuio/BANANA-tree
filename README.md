@@ -7,15 +7,29 @@ Note that it follows the Eptitech coding style.
 
 ## Prerequisites
 
-* Requires a linux operating system
-* Requires python 3.9+
-* Requires git
+Requires:
+* A linux operating system
+* Python 3.9+
+* Git
 
 ## From terminal
 
-Execute this command to install BANANA-tree on your system:
+Clone this repository wherever you want on your system:
 ```
-curl https://raw.githubusercontent.com/azeuio/BANANA-tree/main/install.sh > install.sh && chmod 755 ./install.sh && ./install.sh
+git clone https://github.com/azeuio/BANANA-tree.git
+```
+Enter the directory where you cloned the repository and execute the install script.<br>
+/!\ sudo authorisation will be asked to install the man page.
+```
+./install.sh
+```
+Close the current terminal and the next time you open a one, the following command will be available:
+```
+BANANA-tree
+```
+Use this command if you want to install everything in one go
+```
+git clone https://github.com/azeuio/BANANA-tree.git && cd BANANA-tree && ./install.sh
 ```
 # Usage
 
@@ -25,11 +39,7 @@ BANANA-tree
 ```
 and the program will detect any coding style error in your current directory
 
-Use
-```
-man BANANA-tree
-```
-for more information
+Use ```man BANANA-tree``` or ```BANANA-tree --help``` for more information
 
 # Contributing
 
@@ -37,7 +47,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the process for submitting pu
 
 # Versioning
 
-We use [Semantic Versioning](http://semver.org/) for versioning. For the versions
+I use [Semantic Versioning](http://semver.org/) for versioning. For the versions
 available, see the [tags on this
 repository](https://github.com/azeuio/BANANA-tree/tags).
 
