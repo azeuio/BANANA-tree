@@ -6,7 +6,7 @@ Please follow common sense when creating issues and [the GitHub flow](https://gu
 
 ## Issues
 
-They're cool, use them if you encounter any problem.
+Please, use them if you encounter any problem/bug.
 
 ## Merge Requests
 
