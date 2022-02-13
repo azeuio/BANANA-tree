@@ -11,6 +11,7 @@ then
     exit $?
 fi
 
+original_pwd=$PWD
 if ! cd $BANANATREE;
 then
     echo "Folder '$BANANATREE' doesn't exists."
@@ -23,4 +24,4 @@ if [ "$git_pull_output" != "Already up to date." ]
 then
     $(realpath $(dirname $0))/install.sh
 fi
-cd -
+cd $original_pwd
