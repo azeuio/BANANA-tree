@@ -15,6 +15,7 @@ def print_help():
 if __name__ == '__main__':
     if ("-h" in argv) or ("--help" in argv):
         print_help()
+        exit(EXIT_OK)
     if "--update" in argv or "-u" in argv:
         subprocess.Popen([os.path.dirname(os.readlink(__file__)) + "/../update.sh"])
         exit(EXIT_OK)
