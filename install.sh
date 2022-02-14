@@ -16,6 +16,7 @@ chmod 755 $BANANATREE/uninstall.sh
 chmod 755 $BANANATREE/BANANA_tree/main.py
 
 printf "\e[1mCreating man page (sudo permission will be needed)\e[m\n"
+sudo mkdir -p /usr/local/man/man1/
 sudo ln -sf $BANANATREE/man_page.gz /usr/local/man/man1/BANANA-tree.1.gz
 
 printf "\e[32;1mInstallation finished.\e[m\n"
