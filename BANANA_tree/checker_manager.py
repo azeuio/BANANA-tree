@@ -10,8 +10,30 @@ class CheckerManager:
         checks.F3Checker(),
     )
 
+    def __split_options_and_value(self, options:list[str]) -> list[str]:
+        if not '=' in ','.join(options):
+            return options
+        for i, option in enumerate(options):
+            if not '=' in option:
+                continue
+            splitting_index = option.index('=')
+            split_option = option[:splitting_index], option[splitting_index+1:]
+            options[i] = split_option[0]
+            options.insert(i + 1, split_option[1])
+        return options
+
+
+    def __parse_options(self, options:list[str]):
+        options = self.__split_options_and_value(options)
+        for i, option in enumerate(options):
+            if option == "-v":
+                options[i] = "--view"
+
     def __init__(self, argv:list[str]):
         argv_without_options = [arg for arg in argv if not arg.startswith("-")]
+        options = [arg for arg in argv if arg.startswith('-')]
+        self.__parse_options(options)
+        # exit()
         options = {}
         for opt in argv:
             if not opt.startswith("-"):
