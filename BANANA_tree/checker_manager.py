@@ -109,39 +109,40 @@ class CheckerManager:
                     print(f"\t\t{reports[0].error_type}", end="")
                     print(f"\t{self._get_severity_str(line)}")
 
-    def _print_reports_tree_view(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
+    def print_reports_tree_view(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
         if (is_file_hidden(path) == 1):
             return []
-        if (path.count("/") > 1):
-            print("|", end="")
-            for _ in range(path.count("/") - 2):
-                print("  |", end="")
-        print("  " * ((path.count("/")) > 1), end="")
-        print(f"{path.removesuffix('/')}/")
-        if os.path.isfile(path):
-            print(f"{path}")
-        elif os.path.isdir(path):
-            for file in os.listdir(path):
-                file = str(path.removesuffix("/") + "/" + file)
-                if (os.path.isdir(file)):
-                    self._print_reports_tree_view(file, file_reports)
-                else:
-                    if (file.count("/") > 1):
-                        print("|", end="")
-                        for _ in range(file.count("/") - 2):
-                            print("  |", end="")
-                    print("  " * (file.count("/") - 2), end="")
-                    if any(report.filename == file for file_report in file_reports  for reports in file_report for report in reports):
-                        print(f"\33[31;1m", end="")
-                    print(f"{file.removesuffix('/')}\33[m")
+        if (path.count("/") - self.path.count("/") > 0):
+            for _ in range(path.count("/") - self.path.count("/")):
+                print("|  ", end="")
+        if os.path.isdir(path):
+            print(f"{path.removesuffix('/')}/")
+        elif os.path.isfile(path):
+            if file_has_error(path, file_reports):
+                print(f"\33[31;1m", end="")
+            print(f"{path}\33[m")
+            return
+        if not os.path.isdir(path):
+            return
+        for file in os.listdir(path):
+            file = str(path.removesuffix("/") + "/" + file)
+            if (os.path.isdir(file)):
+                self.print_reports_tree_view(file, file_reports)
+            else:
+                if (file.count("/") - self.path.count("/") > 0):
+                    for _ in range(file.count("/") - self.path.count("/")):
+                        print("|  ", end="")
+                if file_has_error(file, file_reports):
+                    print(f"\33[31;1m", end="")
+                print(f"{file.removesuffix('/')}\33[m")
 
-    def _print_reports(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
+    def print_reports(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
         if self.view == "list":
             self._print_reports_list(file_reports)
         elif self.view == "tree":
-            self._print_reports_tree_view(path, file_reports)
+            self.print_reports_tree_view(path, file_reports)
 
-    def _get_reports(self, path:str):
+    def get_reports(self, path:str):
         if (is_file_hidden(path) == 1):
             return []
         file_reports:list[list[list[checks.CheckReport]]] = []
@@ -151,7 +152,7 @@ class CheckerManager:
             for file in os.listdir(path):
                 file = str(path.removesuffix("/") + "/" + file)
                 if (os.path.isdir(file)):
-                    file_reports.extend(self._get_reports(file))
+                    file_reports.extend(self.get_reports(file))
                 else:
                     file_reports.append(self.check_file(file))
         return file_reports
@@ -161,6 +162,9 @@ class CheckerManager:
             path = self.path
         if not os.path.exists(path):
             return 1
-        file_reports = self._get_reports(path)
-        self._print_reports(path, file_reports)
+        if os.path.isdir(path):
+            path = path.removesuffix("/") + "/"
+        self.path = path
+        file_reports = self.get_reports(path)
+        self.print_reports(path, file_reports)
         return 0
