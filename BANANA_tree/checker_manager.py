@@ -28,27 +28,39 @@ class CheckerManager:
         for i, option in enumerate(options):
             if option == "-v":
                 options[i] = "--view"
+        return options
 
-    def __init__(self, argv:list[str]):
-        argv_without_options = [arg for arg in argv if not arg.startswith("-")]
-        options = [arg for arg in argv if arg.startswith('-')]
-        self.__parse_options(options)
-        # exit()
-        options = {}
-        for opt in argv:
-            if not opt.startswith("-"):
-                continue
-            opt = opt.split("=")
-            if len(opt) == 1:
-                opt.append("")
-            options[opt[0]] = opt[1]
-        self.view = options.get("--view") or options.get("-v") or "list"
+    def __set_options(self, options_dict:dict):
+        self.view = options_dict.get("--view") or "list"
+
+    def __check_options_validity(self, argv:list[str]):
         if self.view not in ("list", "tree"):
-            exit(EXIT_INVALID_PARAMETER, ("--view" if "--view" in argv else "-v", self.view))
+            exit(EXIT_INVALID_PARAMETER, "--view" if "--view" in argv else "-v", self.view)
+
+    def __set_default_searching_directory(self, argv_without_options:list[str]):
         if len(argv_without_options) > 1:
             self.path = argv_without_options[1]
         else:
             self.path = "."
+
+    def __create_options_dict(self, options_list:list[str]):
+        options_dict = {}
+        for i, opt in enumerate(options_list):
+            if not opt.startswith("-"):
+                continue
+            if not options_list[i + 1].startswith("-"):
+                options_dict[opt] = options_list[i + 1]
+            else:
+                options_dict[opt] = ""
+        return options_dict
+
+    def __init__(self, argv:list[str]):
+        options_list = [arg for arg in argv if arg.startswith('-')]
+        options_list = self.__parse_options(options_list)
+        options_dict = self.__create_options_dict(options_list)
+        self.__set_options(options_dict)
+        self.__check_options_validity(argv)
+        self.__set_default_searching_directory(tuple(arg for arg in argv if not arg.startswith("-")))
 
     def check_file(self, filename):
         if not (os.path.exists(filename) and os.path.isfile(filename)):
