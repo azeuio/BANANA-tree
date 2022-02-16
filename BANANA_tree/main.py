@@ -13,7 +13,15 @@ def print_help():
             return (EXIT_MAN_PAGE_NOT_FOUND, )
     return (EXIT_OK, )
 
+def run_test(argv:list[str]):
+    banana_tree_dir = os.environ['BANANATREE']
+    process = subprocess.Popen([f"{banana_tree_dir}/tests_run.sh", *argv[argv.index("--test") + 1:]])
+    process.wait()
+    return (EXIT_OK, )
+
 def main(argv):
+    if ("--test" in argv):
+        return run_test(argv)
     if ("-h" in argv) or ("--help" in argv):
         return print_help()
     if "--update" in argv or "-u" in argv:
