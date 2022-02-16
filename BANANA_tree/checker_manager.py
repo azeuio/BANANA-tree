@@ -42,10 +42,13 @@ class CheckerManager:
         for i, option in enumerate(options):
             if option == "-v":
                 options[i] = "--view"
+            if option == "-r":
+                options[i] = "--recursive"
         return options
 
     def __set_options(self, options_dict:dict):
         self.view = options_dict.get("--view") or "list"
+        self.recursive = options_dict.get("--recursive", None) is not None
 
     def __check_options_validity(self, argv:list[str]):
         if self.view not in ("list", "tree"):
@@ -59,10 +62,11 @@ class CheckerManager:
 
     def __create_options_dict(self, options_list:list[str]):
         options_dict = {}
+        len_list = len(options_list) - 1
         for i, opt in enumerate(options_list):
             if not opt.startswith("-"):
                 continue
-            if not options_list[i + 1].startswith("-"):
+            if i < len_list and not options_list[i + 1].startswith("-"):
                 options_dict[opt] = options_list[i + 1]
             else:
                 options_dict[opt] = ""
@@ -173,8 +177,8 @@ class CheckerManager:
             return
         for file in os.listdir(path):
             file = str(path.removesuffix("/") + "/" + file)
-            if (os.path.isdir(file)):
-                self.print_reports_tree_view(file, file_reports)
+            if (os.path.isdir(file)) and self.recursive:
+                    self.print_reports_tree_view(file, file_reports)
             else:
                 if (file.count("/") - self.path.count("/") > 0):
                     for _ in range(file.count("/") - self.path.count("/")):
@@ -195,7 +199,7 @@ class CheckerManager:
         file_reports:list[list[list[checks.CheckReport]]] = []
         if os.path.isfile(path):
             file_reports = [self.check_file(path)]
-        elif os.path.isdir(path):
+        elif os.path.isdir(path) and (self.recursive or path == self.path):
             for file in os.listdir(path):
                 file = str(path.removesuffix("/") + "/" + file)
                 if (os.path.isdir(file)):
@@ -204,14 +208,12 @@ class CheckerManager:
                     file_reports.append(self.check_file(file))
         return file_reports
 
-    def check(self, path=""):
-        if not path:
-            path = self.path
-        if not os.path.exists(path):
+    def check(self):
+        if not os.path.exists(self.path):
             return 1
-        if os.path.isdir(path):
-            path = path.removesuffix("/") + "/"
-        self.path = path
-        file_reports = self.get_reports(path)
-        self.print_reports(path, file_reports)
+        if os.path.isdir(self.path):
+            self.path = self.path.removesuffix("/") + "/"
+        self.path = self.path
+        file_reports = self.get_reports(self.path)
+        self.print_reports(self.path, file_reports)
         return 0
