@@ -5,6 +5,7 @@ from globals import *
 class F3Checker(Checker):
     def __init__(self):
         super().__init__("F3", severity=MAJOR)
+        self.description = "Number of columns"
 
     def _check_line(self, filename:str, line:str, line_number:int):
         while "\t" in line:
@@ -15,8 +16,9 @@ class F3Checker(Checker):
             errors.append(CheckReport(
                 filename,
                 [line_number, 80, len(line) - 80],
-                error_type = self.error_type,
-                severity = self.severity
+                # error_type = self.error_type,
+                # severity = self.severity,
+                error_type = self
                 ))
         return errors
 

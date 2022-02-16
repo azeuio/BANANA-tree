@@ -15,7 +15,7 @@ class CheckReport:
             precision_range.step
         )
         self.error_type = error_type
-        self.severity = severity
+        # self.severity = severity
 
     def add_error_str(self, string, prefix=""):
         """"""

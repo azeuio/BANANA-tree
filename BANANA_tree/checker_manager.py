@@ -4,11 +4,25 @@ import checks
 import os
 from globals import MAJOR, MINOR, INFO
 from utils.path import is_file_hidden
+from utils.report import file_has_error
+
+TYPE_COL_W = 4
+SEVERITY_COL_W = 15
+DESC_COL_W = 40
 
 class CheckerManager:
     CHECKERS:tuple[checks.Checker] = (
         checks.F3Checker(),
     )
+
+    def __init__(self, argv:list[str]):
+        options_list = [arg for arg in argv if arg.startswith('-')]
+        options_list = self.__parse_options(options_list)
+        options_dict = self.__create_options_dict(options_list)
+        self.__set_options(options_dict)
+        self.__check_options_validity(argv)
+        self.__set_default_searching_directory(tuple(arg for arg in argv if not arg.startswith("-")))
+        self.filename_col_w = 0
 
     def __split_options_and_value(self, options:list[str]) -> list[str]:
         if not '=' in ','.join(options):
@@ -54,14 +68,6 @@ class CheckerManager:
                 options_dict[opt] = ""
         return options_dict
 
-    def __init__(self, argv:list[str]):
-        options_list = [arg for arg in argv if arg.startswith('-')]
-        options_list = self.__parse_options(options_list)
-        options_dict = self.__create_options_dict(options_list)
-        self.__set_options(options_dict)
-        self.__check_options_validity(argv)
-        self.__set_default_searching_directory(tuple(arg for arg in argv if not arg.startswith("-")))
-
     def check_file(self, filename):
         if not (os.path.exists(filename) and os.path.isfile(filename)):
             return []
@@ -71,21 +77,56 @@ class CheckerManager:
             if report:
                 error_reports.append(report)
         if len(error_reports):
-            error_reports.sort(key=lambda x: x[0].error_type)
+            error_reports.sort(key=lambda x: x[0].error_type.error_type)
         return error_reports
 
-    def _get_severity_str(self, report:checks.CheckReport):
-        severity = "\33[47;30mUNKNOWN\33[m"
-        if report.severity == MAJOR:
-            severity = "\33[41m MAJOR \33[m"
-        if report.severity == MINOR:
-            severity = "\33[43;30m MINOR \33[m"
-        if report.severity == INFO:
-            severity = "\33[46;30m INFO \33[m"
+    def __get_severity_str(self, report:checks.CheckReport):
+        severity = "UNKNOWN"
+        if report.error_type.severity == MAJOR:
+            severity = " MAJOR "
+        if report.error_type.severity == MINOR:
+            severity = " MINOR "
+        if report.error_type.severity == INFO:
+            severity = " INFO "
         return severity
 
+    def __get_severity_color(self, severity:str) -> str:
+        if " MAJOR " in severity:
+            return "\33[41m"
+        if " MINOR " in severity:
+            return "\33[43;30m"
+        if " INFO " in severity:
+            return "\33[46;30m"
+        return "\33[47;30m"
 
-    def _print_reports_list(self, file_reports:list[list[list[checks.CheckReport]]]):
+    def _get_severity(self, report:checks.CheckReport) -> str:
+        severity = self.__get_severity_str(report)
+        severity_colored = self.__get_severity_color(severity) + severity + "\33[m"
+        severity = severity.center(SEVERITY_COL_W).replace(severity, severity_colored)
+        return severity
+
+    def _get_type(self, report:checks.CheckReport) -> str:
+        return report.error_type.error_type
+
+    def _get_name_and_pos(self, report:checks.CheckReport) -> str:
+        position = f"{report.error_pos[0]}:{report.error_pos[1]}"
+        name_and_pos = f"{report.filename}:{position}"
+        return name_and_pos
+
+    def __print_list_view_header(self):
+        print(f"\33[40m{'NAME AND POSITION'.center(self.filename_col_w)}", end="")
+        print(f"{'TYPE'.center(TYPE_COL_W)}", end="")
+        print(f"{'SEVERITY'.center(SEVERITY_COL_W)}", end="")
+        print(f"{'DESCRIPTION'.center(DESC_COL_W)}", end="")
+        print("\33[m")
+
+    def _print_list_view_line(self, filename:str, type:str, severity:str, description:str):
+        print(filename.ljust(self.filename_col_w), end="")
+        print(type.center(TYPE_COL_W), end="")
+        print(severity.center(SEVERITY_COL_W), end="")
+        print(description.center(DESC_COL_W))
+
+    def print_reports_list(self, file_reports:list[list[list[checks.CheckReport]]]):
         if len(file_reports) == 0 or sum(len(e) for e in file_reports) == 0:
             print("Nothing to report! 🥳🎉")
             return
@@ -93,21 +134,27 @@ class CheckerManager:
         for reports in file_reports:
             if len(reports):
                 if len(reports[0][0].filename) > len(longuest_filename):
-                    print(reports[0][0].filename)
                     longuest_filename = reports[0][0].filename
-        width_column_filename = len(longuest_filename)
+        self.filename_col_w = len(longuest_filename) + 16
+        self.__print_list_view_header()
         for file_report in file_reports:
             if file_report and file_report[0]:
-                print(f"\n===== {file_report[0][0].filename} =====")
+                print()
+                print(end="\33[1m")
+                filename = f"─── {file_report[0][0].filename} ───".center(self.filename_col_w)
+                self._print_list_view_line(
+                    filename +
+                    "" * (self.filename_col_w - len(filename)),
+                    "" * TYPE_COL_W, "" * SEVERITY_COL_W, "" * DESC_COL_W)
+                print(end="\33[m")
             for reports in file_report:
-                for i, line in enumerate(reports):
-                    position = f"{line.error_pos[0]}:{line.error_pos[1]}"
-                    name_and_pos = f"{reports[0].filename}:{position}"
-                    print(name_and_pos, end="")
-                    for _ in range(max(0, 1 + round((width_column_filename - len(name_and_pos)) / 8))):
-                        print("\t", end="")
-                    print(f"\t\t{reports[0].error_type}", end="")
-                    print(f"\t{self._get_severity_str(line)}")
+                for report in reports:
+                    self._print_list_view_line(
+                        self._get_name_and_pos(report),
+                        self._get_type(report),
+                        self._get_severity(report),
+                        report.error_type.description
+                    )
 
     def print_reports_tree_view(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
         if (is_file_hidden(path) == 1):
@@ -138,7 +185,7 @@ class CheckerManager:
 
     def print_reports(self, path:str, file_reports:list[list[list[checks.CheckReport]]]):
         if self.view == "list":
-            self._print_reports_list(file_reports)
+            self.print_reports_list(file_reports)
         elif self.view == "tree":
             self.print_reports_tree_view(path, file_reports)
 
