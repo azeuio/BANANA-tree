@@ -1,4 +1,4 @@
-from .check_report import CheckReport
+from .file_report import FileReport
 
 class Checker:
     def __init__(self, error_type=None, severity=0):
@@ -6,7 +6,7 @@ class Checker:
         self.severity = severity
         self.description = ""
 
-    def check(self, filename):
+    def check(self, filename) -> FileReport:
         """
         Checks file at `filename` for any `self.error_type` error
 

@@ -7,7 +7,7 @@ class F3Checker(Checker):
         super().__init__("F3", severity=MAJOR)
         self.description = "Number of columns"
 
-    def _check_line(self, filename:str, line:str, line_number:int):
+    def _check_line(self, filename:str, line:str, line_number:int) -> list[CheckReport]:
         while "\t" in line:
             i = line.find("\t")
             line = line[:i] + " " * (TAB_LENGTH - (i % TAB_LENGTH)) + line[i + 1:]
@@ -16,13 +16,13 @@ class F3Checker(Checker):
             errors.append(CheckReport(
                 filename,
                 [line_number, 80, len(line) - 80],
-                # error_type = self.error_type,
-                # severity = self.severity,
-                error_type = self
+                error_type = self.error_type,
+                severity = self.severity,
+                description = self.description
                 ))
         return errors
 
-    def check(self, filename):
+    def check(self, filename) -> list[CheckReport]:
         errors = []
         line_number = 1
         with open(filename, "r") as f:

@@ -1,6 +1,6 @@
-import checks
+from checks.file_report import FileReport
 
-def file_has_error(filename, file_reports:list[list[list[checks.CheckReport]]]):
+def file_has_error(filename:str, file_reports:list[FileReport]):
     """
     Returns `True` if `file_report` contains a report about `filename`
     """

@@ -2,7 +2,7 @@ import os.path
 
 class CheckReport:
     def __init__(self, filename, error_pos, precision_range=range(0, 1),
-    error_type=None, severity=0):
+    error_type=None, severity=0, description=""):
         self.filename = filename
         self.error_pos:list = error_pos
         self.error_pos[0] = max(1, error_pos[0])
@@ -15,7 +15,8 @@ class CheckReport:
             precision_range.step
         )
         self.error_type = error_type
-        # self.severity = severity
+        self.severity = severity
+        self.description = description
 
     def add_error_str(self, string, prefix=""):
         """"""
