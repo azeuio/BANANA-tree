@@ -1,0 +1,16 @@
+_BANANA-tree_complete()
+{
+    local cur_word prev_word type_list
+
+    cur_word="${COMP_WORDS[COMP_CWORD]}"
+    type_list=`BANANA-tree --get-opts`
+
+    if [[ ${cur_word} == -* ]]; then
+        COMPREPLY=( $(compgen -W "${type_list}" -- ${cur_word}) )
+    else
+        COMPREPLY=( $(compgen -W "$(ls -A)" -- ${cur_word}) )
+    fi
+    return 0
+}
+
+complete -F _BANANA-tree_complete BANANA-tree

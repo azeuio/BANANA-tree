@@ -5,6 +5,9 @@ banana_tree_folder="$BANANATREE"
 echo "Removing man page (sudo permission will be needed)"
 sudo rm -f /usr/local/man/man1/BANANA-tree.1.gz
 
+echo "Removing auto-completion"
+sudo rm -f /usr/share/bash-completion/completions/BANANA-tree
+
 echo "Removing link at $HOME/bin/BANANA-tree"
 rm -f $HOME/bin/BANANA-tree
 

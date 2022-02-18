@@ -6,6 +6,7 @@ from custom_exit import exit
 from exit_codes import *
 import tempfile
 from checker_manager import CheckerManager
+from globals import OPTIONS
 
 def print_help():
     with tempfile.TemporaryFile("w") as f:
@@ -19,7 +20,10 @@ def run_test(argv:list[str]):
     process.wait()
     return (EXIT_OK, )
 
-def main(argv):
+def main(argv:list[str]):
+    if ("--get-opts" in argv):
+        print(' '.join(OPTIONS))
+        exit(EXIT_OK)
     if ("--test" in argv):
         return run_test(argv)
     if ("-h" in argv) or ("--help" in argv):

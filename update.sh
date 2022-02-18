@@ -3,11 +3,9 @@
 
 if [ "$BANANATREE" == "" ];
 then
-    echo "hi"
     command="$(realpath $(dirname $0))/install.sh"
     echo $command
     $command
-    source $HOME/.bashrc
     exit $?
 fi
 
