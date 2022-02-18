@@ -3,6 +3,7 @@ import unittest
 from tests.test_is_installed import *
 from tests.test_invalid_path import *
 from tests.test_utils import *
+from tests.test_redirect import *
 
 if __name__ == '__main__':
     unittest.main()
