@@ -165,7 +165,7 @@ class CheckerManager:
             return []
         if (path.count("/") - self.path.count("/") > 0):
             for _ in range(path.count("/") - self.path.count("/")):
-                print("|  ", end="")
+                print("│  ", end="")
         if os.path.isdir(path):
             print(f"{path.removesuffix('/')}/")
         elif os.path.isfile(path):
@@ -182,7 +182,7 @@ class CheckerManager:
             else:
                 if (file.count("/") - self.path.count("/") > 0):
                     for _ in range(file.count("/") - self.path.count("/")):
-                        print("|  ", end="")
+                        print("│  ", end="")
                 if file_has_error(file, file_reports):
                     print(f"\33[31;1m", end="")
                 print(f"{file.removesuffix('/')}\33[m")
