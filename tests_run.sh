@@ -15,29 +15,48 @@ then
 fi
 if [ "$(echo $* | grep -w -- --help)" != "" ];
 then
-    echo "Usage: $path [branch] [--help]"
+    echo "Usage: $path [OPTION]..."
     echo ""
-    printf "branch\tcoverage report will use branch coverage.\n"
-    printf "\0--help\tDisplays this help and exit.\n"
+    printf "--branch\tcoverage report will use branch coverage.\n"
+    echo "OPTION:"
+    printf "\t--coverage\n"
+    printf "\t\tDisplays coverage report after executing the tests.\n"
+    printf "\t--help\n"
+    printf "\t\tDisplays this help and exit.\n"
+    printf "\t--only-coverage\n"
+    printf "\t\tOnly displey the coverage without rerunning the tests.\n"
     exit 0
 fi
-a="$(pip list | grep coverage)"
-if [ "$a" == "" ];
+
+if [ "$(echo $* | grep -w -- --only-coverage)" != "" ];
+then
+    cd $BANANATREE
+    coverage report
+    cd - > /dev/null
+    exit 0
+fi
+
+coverage_installed="$(pip list | grep coverage)"
+if [ "$coverage_installed" == "" ];
 then
     printf "\e[31;1mPackage coverage was not found.\e[m\n" 1>&2
     echo "Tests will be run but no coverage report will be generated."
     printf "Run this command '\e[33mpip install coverage\e[m' to have a coverage report generated\n"
     $BANANATREE/BANANA_tree/tests_run.py
-elif [ $# -eq 0 ] || [ "$1" == "line" ];
-then
-    coverage run --omit=*tests/*,*tests_run* $BANANATREE/BANANA_tree/tests_run.py
-    coverage report
-elif [ $# -gt 1 ] || [ "$1" == "branch" ];
+    exit 1
+fi
+
+if [ "$(echo $* | grep -w -- --branch)" != "" ];
 then
     coverage run --omit=*tests/*,*tests_run* --branch\
     $BANANATREE/BANANA_tree/tests_run.py
-    coverage report
 else
-    echo "Invalid parameter"
-    echo "Try '$path --help' for more information"
+    coverage run --omit=*tests/*,*tests_run* $BANANATREE/BANANA_tree/tests_run.py
+fi
+
+if [ "$(echo $* | grep -w -- --coverage)" != "" ];
+then
+    cd $BANANATREE
+    coverage report
+    cd - > /dev/null
 fi
