@@ -50,7 +50,8 @@ class CheckReport:
         return result.removesuffix("\n")
 
     def __repr__(self):
-        return self.to_str()
+        representation = self.to_str()
+        return representation if representation else f"{self.__class__.__name__}"
 
     def __str__(self):
         return repr(self)
