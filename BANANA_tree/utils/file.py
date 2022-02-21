@@ -1,3 +1,6 @@
+from io import TextIOWrapper
+
+
 def is_file_hidden(filepath:str) -> bool:
     """
     Returns whether or not a file is hidden.

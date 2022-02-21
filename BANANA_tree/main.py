@@ -2,6 +2,7 @@
 import os
 import sys
 import subprocess
+from utils.file_parsing.function import Function
 from custom_exit import exit
 from exit_codes import *
 import tempfile

@@ -4,7 +4,7 @@ from secrets import choice
 import unittest
 import os
 from checks.check_report import CheckReport
-from utils.path import is_file_hidden
+from utils.file import is_file_hidden
 from utils.report import file_has_error
 from checks.file_report import FileReport
 

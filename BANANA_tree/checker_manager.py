@@ -5,7 +5,7 @@ from checks.check_report import CheckReport
 from checks.file_report import FileReport
 import os
 from globals import MAJOR, MINOR, INFO
-from utils.path import is_file_hidden
+from utils.file import is_file_hidden
 from utils.report import file_has_error
 
 TYPE_COL_W = 4
