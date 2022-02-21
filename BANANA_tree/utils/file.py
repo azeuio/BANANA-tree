@@ -15,3 +15,20 @@ def is_file_hidden(filepath:str) -> bool:
     if filepath in (".", ".."):
         return 2
     return filepath.split("/")[-1].startswith(".")
+
+def goto_first_occurence_of_str(str_:str, file:TextIOWrapper) -> int:
+        """
+        Execute `file.readline()` until `str_` is found.
+        ### Return:
+        Returns the number of line read
+        """
+        if not isinstance(str_, str) or not isinstance(file, TextIOWrapper):
+            raise TypeError
+        line_read = 1
+        line = file.readline()
+        while not str_ in line:
+            line = file.readline()
+            if not line:
+                break
+            line_read += 1
+        return line_read
