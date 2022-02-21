@@ -32,3 +32,19 @@ def goto_first_occurence_of_str(str_:str, file:TextIOWrapper) -> int:
                 break
             line_read += 1
         return line_read
+
+def goto_line(n:int, file:TextIOWrapper, start:int=1) -> str:
+        """
+        After call, `file.readline()` will return the (n+1)th line of `file`
+        This function assumes that next call of `file.readline()` will return
+        the content of the `start`th line
+        ### Return:
+        Returns the nth line of file
+        """
+        if (not (isinstance(file,TextIOWrapper) and isinstance(n,int) and
+        isinstance(start,int))):
+            raise TypeError
+
+        for _ in range(start - 1, n):
+            line = file.readline()
+        return line
