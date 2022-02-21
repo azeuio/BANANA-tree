@@ -1,32 +1,8 @@
-#!/usr/bin/env python3
-from random import randint, randrange
-from secrets import choice
 import unittest
-import os
-from checks.check_report import CheckReport
-from utils.file import is_file_hidden
-from utils.report import file_has_error
+from random import randint, choice, randrange
 from checks.file_report import FileReport
-
-class TestUtilsPath(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def test_non_hidden_file(self):
-        return_value = is_file_hidden("tests/test_files/not_hidden_file")
-        self.assertEqual(return_value, False)
-
-    def test_hidden_file(self):
-        return_value = is_file_hidden("tests/test_files/.hidden_file")
-        self.assertEqual(return_value, True)
-
-    def test_non_hidden_folder(self):
-        return_value = is_file_hidden("tests/test_files/not_hidden_folder")
-        self.assertEqual(return_value, False)
-
-    def test_hidden_folder(self):
-        return_value = is_file_hidden("tests/test_files/.hidden_folder")
-        self.assertEqual(return_value, True)
+from checks.check_report import CheckReport
+from utils.report import file_has_error
 
 class TestUtilsReport_file_has_error(unittest.TestCase):
     def __init__(self, *args, **kwargs):
