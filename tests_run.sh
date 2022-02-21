@@ -31,7 +31,7 @@ fi
 if [ "$(echo $* | grep -w -- --only-coverage)" != "" ];
 then
     cd $BANANATREE
-    coverage report
+    coverage report -m
     cd - > /dev/null
     exit 0
 fi
@@ -57,6 +57,6 @@ fi
 if [ "$(echo $* | grep -w -- --coverage)" != "" ];
 then
     cd $BANANATREE
-    coverage report
+    coverage report -m
     cd - > /dev/null
 fi
