@@ -1,6 +1,7 @@
 import os
 import unittest
 from utils.file import is_file_hidden, goto_first_occurence_of_str, goto_line
+from utils.file import goto_end_of_section
 
 class TestUtilsFile_is_file_hidden(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -105,3 +106,53 @@ class TestUtilsFile_goto_line(unittest.TestCase):
                 pass
             goto_line(10, f, 9)
             self.assertEqual(f.readline(), "11\n")
+
+class TestUtilsFile_goto_end_of_section(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def setUp(self) -> None:
+        self.cur_dir = os.environ.get('BANANATREE')
+        if not self.cur_dir:
+            raise Exception("env variable 'BANANATREE' isn't set")
+        self.test_dir = self.cur_dir + "/BANANA_tree/tests/"
+        self.test_files = self.test_dir + "test_files/goto_end_of_section/"
+
+    def test_invalid_arg_file_not_textiowrapper(self):
+        self.assertRaises(TypeError, goto_end_of_section, 42, "a", "b")
+
+    def test_invalid_arg_section_delimiter_not_str(self):
+        with open("/dev/null") as f:
+            self.assertRaises(TypeError, goto_end_of_section, f, 42, "b")
+            self.assertRaises(TypeError, goto_end_of_section, f, "a", 42)
+
+    def test_invalid_arg_first_line_not_str(self):
+        with open("/dev/null") as f:
+            self.assertRaises(TypeError, goto_end_of_section, f, "a", "b", 42)
+
+    def test_invalid_arg_starting_section_level_not_int(self):
+        with open("/dev/null") as f:
+            self.assertRaises(TypeError, goto_end_of_section, f, "a", "b", "", "")
+
+    def test_simple_section(self):
+        with open(self.test_files + "simple_section") as f:
+            f.readline()
+            self.assertEqual(goto_end_of_section(f, "a", "b"), 4)
+            self.assertEqual(f.readline(), "END")
+
+    def test_simple_section_one_line(self):
+        with open(self.test_files + "simple_section_one_line") as f:
+            first_line = f.readline()
+            self.assertEqual(goto_end_of_section(f, "a", "b", first_line, starting_section_level=0), 0)
+            self.assertEqual(f.readline(), "END")
+
+    def test_section_dont_end(self):
+        with open(self.test_files + "section_not_closed") as f:
+            self.assertRaises(EOFError, goto_end_of_section, f, "a", "b")
+
+    def test_section_start_gt_1(self):
+        with open(self.test_files + "section_start_lvl_3") as f:
+            self.assertEqual(
+                goto_end_of_section(f, "a", "b",starting_section_level=3),
+                4
+            )

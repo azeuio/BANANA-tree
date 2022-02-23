@@ -1,4 +1,5 @@
 from .test_file import TestUtilsFile_is_file_hidden
 from .test_file import TestUtilsFile_goto_first_occurence_of_str
 from .test_file import TestUtilsFile_goto_line
+from .test_file import TestUtilsFile_goto_end_of_section
 from .test_report import TestUtilsReport_file_has_error

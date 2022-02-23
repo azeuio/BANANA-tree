@@ -48,3 +48,38 @@ def goto_line(n:int, file:TextIOWrapper, start:int=1) -> str:
         for _ in range(start - 1, n):
             line = file.readline()
         return line
+
+def goto_end_of_section(file:TextIOWrapper, section_start:str,
+section_end:str, starting_line:str="", starting_section_level:int=1) -> int:
+    """
+    After call, `file.readline()` will return the first line after the section
+    that starts with `section_start` and ends with `section_end`.
+
+    Sub-sections can exist within the main section
+    ### Return:
+    Returns the length of the section, including the line contining the section
+    delimiters
+    """
+    if (not isinstance(file, TextIOWrapper) or
+    not isinstance(section_start, str) or not isinstance(section_end, str)
+    or not isinstance(starting_section_level, int) or not
+    isinstance(starting_line, str)):
+        raise TypeError
+
+    recursion_level = starting_section_level
+    number_line_read = 0
+    line = starting_line
+    while recursion_level > 0:
+        recursion_level -= line.count(section_end)
+        recursion_level += line.count(section_start)
+        if recursion_level <= 0:
+            break
+        line = file.readline()
+        number_line_read += 1
+        if not line and recursion_level > 0:
+            raise EOFError(
+                f"A section('{section_start}...{section_end}') "
+                f"was not closed in '{file.name}'\n{recursion_level=}")
+    if line == starting_line and line != "":
+        return 0
+    return number_line_read + 1
