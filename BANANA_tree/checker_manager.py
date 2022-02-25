@@ -238,7 +238,8 @@ class CheckerManager:
             return []
         file_reports:list[FileReport] = []
         if os.path.isfile(path):
-            if not (path.endswith(".c") or path.endswith(".cpp") or path.endswith(".h")):
+            if not (path.endswith(".c") or path.endswith(".cpp") or
+            path.endswith(".h") or path.endswith("Makefile")):
                 return []
             return [self.check_file(path)]
         if os.path.isdir(path) and (self.recursive or path == self.path):
