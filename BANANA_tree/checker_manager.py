@@ -189,7 +189,7 @@ class CheckerManager:
         if os.path.isdir(path):
             print(f"{path.removesuffix('/')}/")
         elif os.path.isfile(path):
-            if file_has_error(path, file_reports):
+            if not self.path_is_filtered_out(path) or file_has_error(path, file_reports):
                 print(f"\33[31;1m", end="")
             print(f"{path}\33[m")
             return

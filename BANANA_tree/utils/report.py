@@ -17,6 +17,6 @@ def file_has_error(filename:str, file_reports:Iterable[FileReport]):
     if not __file_has_error_parameters_are_valid(filename, file_reports):
         return False
     for file_report in file_reports:
-        if file_report.filename == filename:
+        if file_report.filename == filename and len(file_report):
             return True
     return False
