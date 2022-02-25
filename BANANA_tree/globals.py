@@ -9,4 +9,5 @@ OPTIONS = (
     "--test",
     "--update",
     "--view=tree",
+    "--filtered-out=",
 )

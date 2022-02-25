@@ -1,4 +1,5 @@
 from copy import copy
+import re
 from utils.function import Function
 from custom_exit import exit
 from exit_codes import EXIT_INVALID_PARAMETER
@@ -54,11 +55,18 @@ class CheckerManager:
                 options[i] = "--view"
             if option == "-r":
                 options[i] = "--recursive"
+            if option == "-f":
+                options[i] = "--filtered-out"
         return options
 
     def __set_options(self, options_dict:dict):
-        self.view = options_dict.get("--view") or "list"
-        self.recursive = options_dict.get("--recursive", None) is not None
+        self.view:str = options_dict.get("--view") or "list"
+        self.recursive:bool = options_dict.get("--recursive", None) is not None
+        self.filtered_out = options_dict.get("--filtered-out", [])
+        if isinstance(self.filtered_out, str):
+            self.filtered_out:list[str] = self.filtered_out.split(',')
+        while '' in self.filtered_out:
+            self.filtered_out.pop(self.filtered_out.index(''))
 
     def __check_options_validity(self, argv:list[str]):
         if self.view not in ("list", "tree"):
@@ -205,8 +213,28 @@ class CheckerManager:
         elif self.view == "tree":
             self.print_reports_tree_view(path, file_reports)
 
+    def path_is_filtered_out(self, path:str):
+        filename = os.path.basename(path)
+        if path in self.filtered_out or filename in self.filtered_out:
+            return True
+        for pattern in self.filtered_out:
+            if not pattern:
+                continue
+            if pattern == '*':
+                return True
+            tmp = '^' + copy(pattern) + '$'
+            tmp = tmp.replace("*", r".*")
+            cur_pattern = re.compile(tmp, re.MULTILINE)
+            if path and cur_pattern.match(path):
+                return True
+            if filename and cur_pattern.match(filename):
+                return True
+        return False
+
     def get_reports(self, path:str):
         if (is_file_hidden(path) == 1):
+            return []
+        if self.path_is_filtered_out(path):
             return []
         file_reports:list[FileReport] = []
         if os.path.isfile(path):
