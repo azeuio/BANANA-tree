@@ -5,7 +5,7 @@ from utils.function import Function
 import re
 
 SNAKE_CASE_PATTERN:re.Pattern = re.compile(
-    r"[a-z\_]+"
+    r"([^0-9][a-z\_0-9]+)"
 )
 
 class F2Checker(Checker):
