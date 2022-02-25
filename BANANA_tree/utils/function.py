@@ -61,8 +61,6 @@ class Function:
             buff = f.read()
         start_line = []
         for match_obj in functions_start:
-            if (filename == "./lib/my/src/my_printf/add_padding.c"):
-                print("hiell")
             start_line.append(buff.count("\n", 0, match_obj.start()) + 1)
         result = [cls.create_from_line_in_file(line, filename) for line in start_line]
         if not result:
