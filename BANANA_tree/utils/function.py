@@ -14,7 +14,7 @@ class Function:
     TYPE:ClassVar[str] = 'function'
     size:int = field(default=0, init=False, compare=False)
     __TYPE_AND_NAME_PATTERN = r"^[^\n]\w+\s[\w\s]+[\\\n]*"
-    __PARAM_PATTERN = r"\(" + fr"(.*(\\\n)*)*?" + r"\)[\s\n]*\{"
+    __PARAM_PATTERN = r"\(" + fr"(.*((\,.*\n)*))*?" + r"\)[\s\n]*\{"
     FUNC_START_PATTERN:ClassVar[str] = fr"{__TYPE_AND_NAME_PATTERN}{__PARAM_PATTERN}"
 
     def range(self):
@@ -37,7 +37,7 @@ class Function:
                 if file_buffer.count('\n') > 500:
                     print(f"'{filename}' is too large. It will be ignored")
                     return None
-                match_result = cls.function_match.finditer(file_buffer)
+                match_result = list(cls.function_match.finditer(file_buffer))
                 if match_result:
                     result = match_result
         except UnicodeDecodeError:
@@ -53,16 +53,20 @@ class Function:
     @classmethod
     def get_all_in_file(cls, filename):
         if (not filename.endswith(".c") or filename.endswith(".cpp")):
-            return None
+            return []
         functions_start = cls._get_function_starts_in_file(filename)
         if (functions_start is None):
-            return None
+            return []
         with open(filename, 'r') as f:
             buff = f.read()
         start_line = []
         for match_obj in functions_start:
+            if (filename == "./lib/my/src/my_printf/add_padding.c"):
+                print("hiell")
             start_line.append(buff.count("\n", 0, match_obj.start()) + 1)
         result = [cls.create_from_line_in_file(line, filename) for line in start_line]
+        if not result:
+            return []
         return (func for func in result)
 
     def find_end(self):
