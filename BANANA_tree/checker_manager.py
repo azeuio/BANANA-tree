@@ -62,7 +62,7 @@ class CheckerManager:
     def __set_options(self, options_dict:dict):
         self.view:str = options_dict.get("--view") or "list"
         self.recursive:bool = options_dict.get("--recursive", None) is not None
-        self.filtered_out = options_dict.get("--filtered-out", [])
+        self.filtered_out = options_dict.get("--filtered-out", ["*test*"])
         if isinstance(self.filtered_out, str):
             self.filtered_out:list[str] = self.filtered_out.split(',')
         while '' in self.filtered_out:
