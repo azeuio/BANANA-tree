@@ -1,3 +1,5 @@
+from copy import copy
+from utils.function import Function
 from custom_exit import exit
 from exit_codes import EXIT_INVALID_PARAMETER
 import checks
@@ -15,6 +17,13 @@ DESC_COL_W = 40
 class CheckerManager:
     CHECKERS:tuple[checks.Checker] = (
         checks.F3Checker(),
+        checks.F4Checker(),
+        checks.F2Checker(),
+        checks.F5Checker(),
+        checks.F6Checker(),
+        checks.G1Checker(),
+        checks.G8Checker(),
+        checks.L2Checker(),
     )
 
     def __init__(self, argv:list[str]):
@@ -73,14 +82,19 @@ class CheckerManager:
                 options_dict[opt] = ""
         return options_dict
 
-    def check_file(self, filename):
+    def check_file(self, filename:str):
         if not (os.path.exists(filename) and os.path.isfile(filename)):
             raise FileNotFoundError
-        file_report:FileReport = FileReport(filename)
+        functions = Function.get_all_in_file(filename)
+        file_report = FileReport(filename)
+        functions_list = None
         for checker in CheckerManager.CHECKERS:
-            report = checker.check(filename)
-            if report:
-                file_report.reports.append(report)
+            if not functions_list and functions:
+                functions_list = list(functions)
+            report = checker.check(filename, functions=functions_list)
+            if not report:
+                continue
+            file_report.reports.append(report)
         return file_report
 
     def __get_severity_str(self, report:CheckReport):
@@ -196,6 +210,8 @@ class CheckerManager:
             return []
         file_reports:list[FileReport] = []
         if os.path.isfile(path):
+            if not (path.endswith(".c") or path.endswith(".cpp") or path.endswith(".h")):
+                return []
             return [self.check_file(path)]
         if os.path.isdir(path) and (self.recursive or path == self.path):
             for file in os.listdir(path):

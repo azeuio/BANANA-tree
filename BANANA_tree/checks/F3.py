@@ -22,7 +22,7 @@ class F3Checker(Checker):
                 ))
         return errors
 
-    def check(self, filename) -> list[CheckReport]:
+    def check(self, filename, **kwargs) -> list[CheckReport]:
         errors = []
         line_number = 1
         with open(filename, "r") as f:

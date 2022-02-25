@@ -6,7 +6,7 @@ class Checker:
         self.severity = severity
         self.description = ""
 
-    def check(self, filename) -> FileReport:
+    def check(self, filename, functions=None) -> list[FileReport]:
         """
         Checks file at `filename` for any `self.error_type` error
 

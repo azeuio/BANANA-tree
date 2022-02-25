@@ -6,6 +6,7 @@ class CheckReport:
         self.filename = filename
         self.error_pos:list = error_pos
         self.error_pos[0] = max(1, error_pos[0])
+        self.error_pos[1] = max(1, error_pos[1])
         while (len(self.error_pos) < 3):
             self.error_pos.append(1)
         self.precision_range = precision_range
