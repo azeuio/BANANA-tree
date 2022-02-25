@@ -66,8 +66,6 @@ class G1Checker(Checker):
         makefile_header_pattern:re.Pattern = re.compile(MAKEFILE_HEADER_PATTERN)
         if not makefile_header_pattern.search(lines):
             return False
-        else:
-            print(makefile_header_pattern.search(lines).group())
         return True
 
     def _check_makefile_type_header(self, filename:str) -> list[CheckReport]:
